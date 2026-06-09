@@ -36,7 +36,7 @@ async function createPathway(pathway) {
   });
   const data = await res.json();
   if (!res.ok) throw new Error(`Pathway create failed: ${JSON.stringify(data)}`);
-  return data.pathway_id || data.id;
+  return data.pathway_id || data.data?.pathway_id || data.id;
 }
 
 async function attachToInboundNumber(pathwayId) {

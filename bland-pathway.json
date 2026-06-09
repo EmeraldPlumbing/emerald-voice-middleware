@@ -133,7 +133,7 @@
       "type": "Webhook",
       "data": {
         "name": "Create ServiceTitan booking",
-        "url": "https://YOUR-DOMAIN.example.com/bland/book",
+        "url": "https://emerald-voice-middleware.onrender.com/bland/book",
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
