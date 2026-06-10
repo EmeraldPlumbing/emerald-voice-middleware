@@ -1,9 +1,7 @@
 {
-  "name": "Emerald Plumbing — Inbound Intake",
+  "name": "Emerald Plumbing \u2014 Inbound Intake",
   "description": "Scripted inbound agent for Emerald Plumbing. Encodes the phone-answering script, septic add-on pitch, vetting questions, and fee-waiver close, then books into ServiceTitan via webhook.",
-
-  "globalPrompt": "You are a warm, professional phone agent for Emerald Plumbing, DC's #1 plumber for sewer, septic, grease traps, and drain solutions (licensed in MD, DC, VA, DE; main line 240-392-3535). Stay friendly and concise — this is a phone call, so keep turns short and natural. Follow the scripted nodes closely; do not invent services or guarantee pricing. Pricing is for estimation only and may change after on-site inspection, so avoid quoting prices unless the caller directly asks. If the caller is angry, has an active emergency (flooding, sewage backup, no water), or asks for something outside these scripts, reassure them and offer to connect them to a live team member. PAYMENT RULE (absolute): never ask for, accept, read back, repeat, or record any payment information — card type, card number, expiration date, security/CVV code, or billing details. Do not collect payment over the phone at all. If the caller offers payment details, gently decline: 'No need to share any of that with me — a team member will reach out shortly to take care of payment securely and confirm your service.'",
-
+  "globalPrompt": "You are a warm, professional phone agent for Emerald Plumbing, DC's #1 plumber for sewer, septic, grease traps, and drain solutions (licensed in MD, DC, VA, DE; main line 240-392-3535). Stay friendly and concise \u2014 this is a phone call, so keep turns short and natural. Follow the scripted nodes closely; do not invent services or guarantee pricing. Pricing is for estimation only and may change after on-site inspection, so avoid quoting prices unless the caller directly asks. If the caller is angry, has an active emergency (flooding, sewage backup, no water), or asks for something outside these scripts, reassure them and offer to connect them to a live team member. PAYMENT RULE (absolute): never ask for, accept, read back, repeat, or record any payment information \u2014 card type, card number, expiration date, security/CVV code, or billing details. Do not collect payment over the phone at all. If the caller offers payment details, gently decline: 'No need to share any of that with me \u2014 a team member will reach out shortly to take care of payment securely and confirm your service.'",
   "nodes": [
     {
       "id": "greeting",
@@ -11,7 +9,7 @@
       "data": {
         "name": "Greeting",
         "isStart": true,
-        "prompt": "Open the call by saying EXACTLY this line, then STOP and wait for the caller to reply before doing anything else: \"Thank you for calling Emerald Plumbing, D C's number one plumber for sewer, septic, grease traps and drain solutions. This is Emma. Are you calling about our pumping specials or maintenance services today?\" Do not continue talking until the caller has responded. Once they say anything at all, move on to figure out what they need."
+        "text": "Thank you for calling Emerald Plumbing, D C's number one plumber for sewer, septic, grease traps and drain solutions. This is Emma. Are you calling about our pumping specials or maintenance services today?"
       }
     },
     {
@@ -27,7 +25,7 @@
       "type": "Default",
       "data": {
         "name": "Emergency handoff",
-        "text": "I'm so sorry you're dealing with that — let's get you help fast. I'm going to connect you with our on-call team right now. Please stay on the line."
+        "text": "I'm so sorry you're dealing with that \u2014 let's get you help fast. I'm going to connect you with our on-call team right now. Please stay on the line."
       }
     },
     {
@@ -35,17 +33,21 @@
       "type": "Default",
       "data": {
         "name": "Septic add-on value pitch",
-        "text": "Great — I can help with that. When we handle your septic service, we don't just pump the tank and leave. We do a full maintenance check to make sure the whole system is running right. We inspect the inlet and outlet T-pipes for defects and run a flow test to catch any hidden clogs. If we find a blockage, we'll tell you right away and give you the best options to clear it. Then we completely pump out all the liquids and solids — and instead of leaving the walls caked in sludge, we pressure wash the inside of the tank with a specialized treatment that breaks down bad bacteria and prevents buildup and odors. Finally, we submit the official disposal manifest directly to the county for you, so your compliance is fully taken care of."
+        "text": "Great \u2014 I can help with that. When we handle your septic service, we don't just pump the tank and leave. We do a full maintenance check to make sure the whole system is running right. We inspect the inlet and outlet T-pipes for defects and run a flow test to catch any hidden clogs. If we find a blockage, we'll tell you right away and give you the best options to clear it. Then we completely pump out all the liquids and solids \u2014 and instead of leaving the walls caked in sludge, we pressure wash the inside of the tank with a specialized treatment that breaks down bad bacteria and prevents buildup and odors. Finally, we submit the official disposal manifest directly to the county for you, so your compliance is fully taken care of."
       }
     },
     {
       "id": "vet_location",
       "type": "Default",
       "data": {
-        "name": "Vetting 1 — tank location",
-        "prompt": "Say: 'To make sure we send the right technician and equipment, I just have a few quick questions about your system. First — do you happen to know exactly where your septic tank is located on the property?' If they DON'T know the location, reassure: 'No worries at all, that's completely normal! We can handle the locating for you — we send a specialized team with electronic locating equipment to find it exactly, so we don't disturb your yard. We perform a camera and locate for this.' Only state the $750 price if they directly ask. Capture into variable needs_locate (true/false).",
+        "name": "Vetting 1 \u2014 tank location",
+        "prompt": "Say: 'To make sure we send the right technician and equipment, I just have a few quick questions about your system. First \u2014 do you happen to know exactly where your septic tank is located on the property?' If they DON'T know the location, reassure: 'No worries at all, that's completely normal! We can handle the locating for you \u2014 we send a specialized team with electronic locating equipment to find it exactly, so we don't disturb your yard. We perform a camera and locate for this.' Only state the $750 price if they directly ask. Capture into variable needs_locate (true/false).",
         "extractVars": [
-          ["needs_locate", "boolean", "true if the caller does not know where the tank is and needs locating"]
+          [
+            "needs_locate",
+            "boolean",
+            "true if the caller does not know where the tank is and needs locating"
+          ]
         ]
       }
     },
@@ -53,10 +55,14 @@
       "id": "vet_access",
       "type": "Default",
       "data": {
-        "name": "Vetting 2 — accessibility",
-        "prompt": "Ask: 'Is the tank easily accessible — does it have a riser or lid that's exposed, or will we need to dig it up?' If digging is required, reassure: 'Got it! If it's buried, our team will gladly handle the heavy lifting and carefully excavate to access the lid for you. We provide that professional digging service.' Only state the $450 price if they directly ask. Capture into variable needs_dig (true/false).",
+        "name": "Vetting 2 \u2014 accessibility",
+        "prompt": "Ask: 'Is the tank easily accessible \u2014 does it have a riser or lid that's exposed, or will we need to dig it up?' If digging is required, reassure: 'Got it! If it's buried, our team will gladly handle the heavy lifting and carefully excavate to access the lid for you. We provide that professional digging service.' Only state the $450 price if they directly ask. Capture into variable needs_dig (true/false).",
         "extractVars": [
-          ["needs_dig", "boolean", "true if the lid is buried and excavation is needed"]
+          [
+            "needs_dig",
+            "boolean",
+            "true if the lid is buried and excavation is needed"
+          ]
         ]
       }
     },
@@ -64,10 +70,14 @@
       "id": "vet_size",
       "type": "Default",
       "data": {
-        "name": "Vetting 3 — tank size",
-        "prompt": "Ask: 'And finally, do you happen to know the gallon size of your tank — for example, 1,000 or 1,500 gallons?' If they're unsure, reassure: 'That's completely fine — we'll confirm the tank size once we're onsite and give you an accurate quote for the pumping.' Capture into variable tank_size (free text, may be 'unknown').",
+        "name": "Vetting 3 \u2014 tank size",
+        "prompt": "Ask: 'And finally, do you happen to know the gallon size of your tank \u2014 for example, 1,000 or 1,500 gallons?' If they're unsure, reassure: 'That's completely fine \u2014 we'll confirm the tank size once we're onsite and give you an accurate quote for the pumping.' Capture into variable tank_size (free text, may be 'unknown').",
         "extractVars": [
-          ["tank_size", "string", "stated gallon size of the septic tank, or 'unknown'"]
+          [
+            "tank_size",
+            "string",
+            "stated gallon size of the septic tank, or 'unknown'"
+          ]
         ]
       }
     },
@@ -76,14 +86,14 @@
       "type": "Default",
       "data": {
         "name": "Fee-waiver close (septic)",
-        "text": "Perfect. To get this started, we'll send one of our Certified Septic Experts out to thoroughly assess your system, check the levels, and give you an exact, upfront price for the pumping. Normally it's just a forty-nine dollar service-call fee to get an expert to your door with a full written assessment — but as long as you move forward with the pumping while we're there, we'll completely waive that fee. Does a morning or an afternoon work better to get you on the schedule?"
+        "text": "Perfect. To get this started, we'll send one of our Certified Septic Experts out to thoroughly assess your system, check the levels, and give you an exact, upfront price for the pumping. Normally it's just a forty-nine dollar service-call fee to get an expert to your door with a full written assessment \u2014 but as long as you move forward with the pumping while we're there, we'll completely waive that fee. Does a morning or an afternoon work better to get you on the schedule?"
       }
     },
     {
       "id": "other_service_info",
       "type": "Default",
       "data": {
-        "name": "Other service — qualify",
+        "name": "Other service \u2014 qualify",
         "prompt": "The caller needs a non-septic service (grease trap, drain/sewer, water heater, sump/storm, perc test, or other). Briefly confirm what they need and reassure we handle it. Explain that to give an exact price we send a technician out for an assessment; pricing is finalized on site. Do NOT quote firm prices unless the caller directly asks. Then move toward scheduling."
       }
     },
@@ -92,18 +102,58 @@
       "type": "Default",
       "data": {
         "name": "Collect contact + address",
-        "prompt": "Collect these one or two at a time, confirming as you go: (1) first name and last name, (2) best callback phone number, (3) email address, (4) how they heard about us (e.g. Google, referral, repeat customer, truck/sign, social), (5) the service street address — street, unit/apt if any, city, state, ZIP. Read the address and the spelling of their name and email back to confirm. Do NOT ask for or accept any payment-card information here.",
+        "prompt": "Collect these one or two at a time, confirming as you go: (1) first name and last name, (2) best callback phone number, (3) email address, (4) how they heard about us (e.g. Google, referral, repeat customer, truck/sign, social), (5) the service street address \u2014 street, unit/apt if any, city, state, ZIP. Read the address and the spelling of their name and email back to confirm. Do NOT ask for or accept any payment-card information here.",
         "extractVars": [
-          ["first_name", "string", "caller's first name"],
-          ["last_name", "string", "caller's last name"],
-          ["callback_number", "string", "best callback phone number"],
-          ["email", "string", "email address"],
-          ["referral_source", "string", "how the caller heard about us"],
-          ["street", "string", "service street address"],
-          ["unit", "string", "apartment/unit number if any"],
-          ["city", "string", "city"],
-          ["state", "string", "state, two-letter"],
-          ["zip", "string", "service-address ZIP code"]
+          [
+            "first_name",
+            "string",
+            "caller's first name"
+          ],
+          [
+            "last_name",
+            "string",
+            "caller's last name"
+          ],
+          [
+            "callback_number",
+            "string",
+            "best callback phone number"
+          ],
+          [
+            "email",
+            "string",
+            "email address"
+          ],
+          [
+            "referral_source",
+            "string",
+            "how the caller heard about us"
+          ],
+          [
+            "street",
+            "string",
+            "service street address"
+          ],
+          [
+            "unit",
+            "string",
+            "apartment/unit number if any"
+          ],
+          [
+            "city",
+            "string",
+            "city"
+          ],
+          [
+            "state",
+            "string",
+            "state, two-letter"
+          ],
+          [
+            "zip",
+            "string",
+            "service-address ZIP code"
+          ]
         ]
       }
     },
@@ -114,9 +164,21 @@
         "name": "Collect preferred window",
         "prompt": "Confirm the soonest day that works and whether morning or afternoon is better. Summarize the whole request in one sentence for the file.",
         "extractVars": [
-          ["preferred_window", "string", "e.g. 'Thursday morning'"],
-          ["service_type", "string", "short label of the service requested, e.g. 'Septic Tank Pumping'"],
-          ["call_summary", "string", "one-sentence recap of the request and any access notes"]
+          [
+            "preferred_window",
+            "string",
+            "e.g. 'Thursday morning'"
+          ],
+          [
+            "service_type",
+            "string",
+            "short label of the service requested, e.g. 'Septic Tank Pumping'"
+          ],
+          [
+            "call_summary",
+            "string",
+            "one-sentence recap of the request and any access notes"
+          ]
         ]
       }
     },
@@ -125,7 +187,7 @@
       "type": "Default",
       "data": {
         "name": "Payment handoff",
-        "text": "Wonderful. You won't need to share any payment details with me today — one of our team members will be in touch shortly to collect your payment information and confirm your service."
+        "text": "Wonderful. You won't need to share any payment details with me today \u2014 one of our team members will be in touch shortly to collect your payment information and confirm your service."
       }
     },
     {
@@ -174,29 +236,100 @@
       "type": "End Call",
       "data": {
         "name": "End",
-        "text": "Thank you for calling Emerald Plumbing — we'll see you soon. Have a great day!"
+        "text": "Thank you for calling Emerald Plumbing \u2014 we'll see you soon. Have a great day!"
       }
     }
   ],
-
   "edges": [
-    { "id": "e_greet_triage", "source": "greeting", "target": "triage", "label": "The caller has said anything in response to the greeting" },
-    { "id": "e_triage_emerg", "source": "triage", "target": "emergency", "label": "active emergency: flooding, sewage backup, or no water" },
-    { "id": "e_triage_septic", "source": "triage", "target": "septic_addon", "label": "needs septic service" },
-    { "id": "e_triage_other", "source": "triage", "target": "other_service_info", "label": "needs any non-septic service" },
-
-    { "id": "e_septic_vet1", "source": "septic_addon", "target": "vet_location", "label": "after pitch" },
-    { "id": "e_vet1_vet2", "source": "vet_location", "target": "vet_access", "label": "location handled" },
-    { "id": "e_vet2_vet3", "source": "vet_access", "target": "vet_size", "label": "access handled" },
-    { "id": "e_vet3_close", "source": "vet_size", "target": "septic_close", "label": "size handled" },
-    { "id": "e_close_contact", "source": "septic_close", "target": "collect_contact", "label": "caller wants to schedule" },
-
-    { "id": "e_other_contact", "source": "other_service_info", "target": "collect_contact", "label": "ready to schedule" },
-
-    { "id": "e_contact_sched", "source": "collect_contact", "target": "collect_schedule", "label": "contact + address captured" },
-    { "id": "e_sched_pay", "source": "collect_schedule", "target": "payment_setup", "label": "window captured" },
-    { "id": "e_pay_book", "source": "payment_setup", "target": "book", "label": "payment handoff delivered" },
-    { "id": "e_book_confirm", "source": "book", "target": "confirm", "label": "webhook returned" },
-    { "id": "e_confirm_end", "source": "confirm", "target": "endcall", "label": "nothing else needed" }
+    {
+      "id": "e_greet_triage",
+      "source": "greeting",
+      "target": "triage",
+      "label": "The caller has said anything in response to the greeting"
+    },
+    {
+      "id": "e_triage_emerg",
+      "source": "triage",
+      "target": "emergency",
+      "label": "active emergency: flooding, sewage backup, or no water"
+    },
+    {
+      "id": "e_triage_septic",
+      "source": "triage",
+      "target": "septic_addon",
+      "label": "needs septic service"
+    },
+    {
+      "id": "e_triage_other",
+      "source": "triage",
+      "target": "other_service_info",
+      "label": "needs any non-septic service"
+    },
+    {
+      "id": "e_septic_vet1",
+      "source": "septic_addon",
+      "target": "vet_location",
+      "label": "after pitch"
+    },
+    {
+      "id": "e_vet1_vet2",
+      "source": "vet_location",
+      "target": "vet_access",
+      "label": "location handled"
+    },
+    {
+      "id": "e_vet2_vet3",
+      "source": "vet_access",
+      "target": "vet_size",
+      "label": "access handled"
+    },
+    {
+      "id": "e_vet3_close",
+      "source": "vet_size",
+      "target": "septic_close",
+      "label": "size handled"
+    },
+    {
+      "id": "e_close_contact",
+      "source": "septic_close",
+      "target": "collect_contact",
+      "label": "caller wants to schedule"
+    },
+    {
+      "id": "e_other_contact",
+      "source": "other_service_info",
+      "target": "collect_contact",
+      "label": "ready to schedule"
+    },
+    {
+      "id": "e_contact_sched",
+      "source": "collect_contact",
+      "target": "collect_schedule",
+      "label": "contact + address captured"
+    },
+    {
+      "id": "e_sched_pay",
+      "source": "collect_schedule",
+      "target": "payment_setup",
+      "label": "window captured"
+    },
+    {
+      "id": "e_pay_book",
+      "source": "payment_setup",
+      "target": "book",
+      "label": "payment handoff delivered"
+    },
+    {
+      "id": "e_book_confirm",
+      "source": "book",
+      "target": "confirm",
+      "label": "webhook returned"
+    },
+    {
+      "id": "e_confirm_end",
+      "source": "confirm",
+      "target": "endcall",
+      "label": "nothing else needed"
+    }
   ]
 }
