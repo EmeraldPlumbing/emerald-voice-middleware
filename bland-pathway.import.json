@@ -61,19 +61,7 @@
       },
       "data": {
         "name": "Emergency fallback (no hang-up)",
-        "text": "It looks like I'm having trouble connecting you right now, but I've flagged this as urgent and our team will call you right back at the number you gave me. If things get worse in the meantime, please call us directly at 2 4 0, 3 9 2, 3 5 3 5. Hang tight \u2014 help is on the way."
-      }
-    },
-    {
-      "id": "septic_addon",
-      "type": "Default",
-      "position": {
-        "x": 360,
-        "y": 340
-      },
-      "data": {
-        "name": "Septic add-on value pitch",
-        "text": "Great \u2014 I can help with that. When we handle your septic service, we don't just pump the tank and leave. We do a full maintenance check to make sure the whole system is running right. We inspect the inlet and outlet T-pipes for defects and run a flow test to catch any hidden clogs. If we find a blockage, we'll tell you right away and give you the best options to clear it. Then we completely pump out all the liquids and solids \u2014 and instead of leaving the walls caked in sludge, we pressure wash the inside of the tank with a specialized treatment that breaks down bad bacteria and prevents buildup and odors. Finally, we submit the official disposal manifest directly to the county for you, so your compliance is fully taken care of."
+        "prompt": "Say this ONCE in a calm, reassuring tone, then end the call. Do NOT repeat it: 'It looks like I'm having trouble connecting you right now, but I've flagged this as urgent and our team will call you right back at the number you gave me. If things get worse in the meantime, please call us directly at 2 4 0, 3 9 2, 3 5 3 5. Hang tight \u2014 help is on the way.'"
       }
     },
     {
@@ -84,8 +72,8 @@
         "y": 510
       },
       "data": {
-        "name": "Vetting 1 \u2014 tank location",
-        "prompt": "Say: 'To make sure we send the right technician and equipment, I just have a few quick questions about your system. First \u2014 do you happen to know exactly where your septic tank is located on the property?' If they DON'T know the location, reassure: 'No worries at all, that's completely normal! We can handle the locating for you \u2014 we send a specialized team with electronic locating equipment to find it exactly, so we don't disturb your yard. We perform a camera and locate for this.' Only state the $750 price if they directly ask. Capture into variable needs_locate (true/false).",
+        "name": "Septic pitch + tank location",
+        "prompt": "FIRST, deliver this value pitch ONCE, in your own natural pace, then immediately ask the location question in the same turn. Do NOT repeat the pitch and do NOT say it again later. PITCH: 'Great \u2014 I can help with that. When we handle your septic service we don't just pump the tank and leave \u2014 we do a full maintenance check. We inspect the inlet and outlet T-pipes for defects and run a flow test to catch hidden clogs, and if we find a blockage we'll tell you right away with the best options to clear it. We pump out all the liquids and solids, then pressure wash the inside of the tank with a treatment that breaks down bad bacteria and prevents buildup and odors, and we submit the official disposal manifest to the county for you so your compliance is handled.' THEN ASK: 'To make sure we send the right technician and equipment, do you happen to know exactly where your septic tank is located on the property?' If they DON'T know, reassure: 'No worries, that's completely normal \u2014 we can locate it for you with electronic locating equipment so we don't disturb your yard.' Only state the $750 camera-and-locate price if they directly ask. Capture needs_locate (true/false), then continue.",
         "extractVars": [
           [
             "needs_locate",
@@ -142,7 +130,7 @@
       },
       "data": {
         "name": "Fee-waiver close (septic)",
-        "text": "Perfect. To get this started, we'll send one of our Certified Septic Experts out to thoroughly assess your system, check the levels, and give you an exact, upfront price for the pumping. Normally it's just a one hundred forty-nine dollar service-call fee to get an expert to your door with a full written assessment \u2014 but as long as you move forward with the pumping while we're there, we'll completely waive that fee. Does a morning or an afternoon work better to get you on the schedule?"
+        "prompt": "Say this ONCE, then wait for the caller's answer. Do NOT repeat it: 'Perfect. To get this started, we'll send one of our Certified Septic Experts out to thoroughly assess your system, check the levels, and give you an exact, upfront price for the pumping. Normally it's just a one hundred forty-nine dollar service-call fee to get an expert to your door with a full written assessment \u2014 but as long as you move forward with the pumping while we're there, we'll completely waive that fee. Does a morning or an afternoon work better to get you on the schedule?' After they answer, continue."
       }
     },
     {
@@ -292,7 +280,7 @@
       },
       "data": {
         "name": "Payment handoff",
-        "text": "Wonderful. You won't need to share any payment details with me today \u2014 one of our team members will call you back within the hour to confirm your exact appointment time and take care of payment."
+        "prompt": "Say this ONCE, then continue to finalize the booking. Do NOT repeat it and do NOT ask for any payment details: 'Wonderful. You won't need to share any payment details with me today \u2014 one of our team members will call you back within the hour to confirm your exact appointment time and take care of payment.'"
       }
     },
     {
@@ -406,7 +394,7 @@
     {
       "id": "e_triage_septic",
       "source": "greeting",
-      "target": "septic_addon",
+      "target": "vet_location",
       "type": "custom",
       "label": "needs septic service",
       "data": {
@@ -423,17 +411,6 @@
       "data": {
         "label": "needs any non-septic service",
         "description": "needs any non-septic service"
-      }
-    },
-    {
-      "id": "e_septic_vet1",
-      "source": "septic_addon",
-      "target": "vet_location",
-      "type": "custom",
-      "label": "after pitch",
-      "data": {
-        "label": "after pitch",
-        "description": "after pitch"
       }
     },
     {

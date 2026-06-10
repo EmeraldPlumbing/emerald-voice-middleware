@@ -43,23 +43,15 @@
       "type": "Default",
       "data": {
         "name": "Emergency fallback (no hang-up)",
-        "text": "It looks like I'm having trouble connecting you right now, but I've flagged this as urgent and our team will call you right back at the number you gave me. If things get worse in the meantime, please call us directly at 2 4 0, 3 9 2, 3 5 3 5. Hang tight — help is on the way."
-      }
-    },
-    {
-      "id": "septic_addon",
-      "type": "Default",
-      "data": {
-        "name": "Septic add-on value pitch",
-        "text": "Great — I can help with that. When we handle your septic service, we don't just pump the tank and leave. We do a full maintenance check to make sure the whole system is running right. We inspect the inlet and outlet T-pipes for defects and run a flow test to catch any hidden clogs. If we find a blockage, we'll tell you right away and give you the best options to clear it. Then we completely pump out all the liquids and solids — and instead of leaving the walls caked in sludge, we pressure wash the inside of the tank with a specialized treatment that breaks down bad bacteria and prevents buildup and odors. Finally, we submit the official disposal manifest directly to the county for you, so your compliance is fully taken care of."
+        "prompt": "Say this ONCE in a calm, reassuring tone, then end the call. Do NOT repeat it: 'It looks like I'm having trouble connecting you right now, but I've flagged this as urgent and our team will call you right back at the number you gave me. If things get worse in the meantime, please call us directly at 2 4 0, 3 9 2, 3 5 3 5. Hang tight — help is on the way.'"
       }
     },
     {
       "id": "vet_location",
       "type": "Default",
       "data": {
-        "name": "Vetting 1 — tank location",
-        "prompt": "Say: 'To make sure we send the right technician and equipment, I just have a few quick questions about your system. First — do you happen to know exactly where your septic tank is located on the property?' If they DON'T know the location, reassure: 'No worries at all, that's completely normal! We can handle the locating for you — we send a specialized team with electronic locating equipment to find it exactly, so we don't disturb your yard. We perform a camera and locate for this.' Only state the $750 price if they directly ask. Capture into variable needs_locate (true/false).",
+        "name": "Septic pitch + tank location",
+        "prompt": "FIRST, deliver this value pitch ONCE, in your own natural pace, then immediately ask the location question in the same turn. Do NOT repeat the pitch and do NOT say it again later. PITCH: 'Great — I can help with that. When we handle your septic service we don't just pump the tank and leave — we do a full maintenance check. We inspect the inlet and outlet T-pipes for defects and run a flow test to catch hidden clogs, and if we find a blockage we'll tell you right away with the best options to clear it. We pump out all the liquids and solids, then pressure wash the inside of the tank with a treatment that breaks down bad bacteria and prevents buildup and odors, and we submit the official disposal manifest to the county for you so your compliance is handled.' THEN ASK: 'To make sure we send the right technician and equipment, do you happen to know exactly where your septic tank is located on the property?' If they DON'T know, reassure: 'No worries, that's completely normal — we can locate it for you with electronic locating equipment so we don't disturb your yard.' Only state the $750 camera-and-locate price if they directly ask. Capture needs_locate (true/false), then continue.",
         "extractVars": [
           ["needs_locate", "boolean", "true if the caller does not know where the tank is and needs locating"]
         ]
@@ -92,7 +84,7 @@
       "type": "Default",
       "data": {
         "name": "Fee-waiver close (septic)",
-        "text": "Perfect. To get this started, we'll send one of our Certified Septic Experts out to thoroughly assess your system, check the levels, and give you an exact, upfront price for the pumping. Normally it's just a one hundred forty-nine dollar service-call fee to get an expert to your door with a full written assessment — but as long as you move forward with the pumping while we're there, we'll completely waive that fee. Does a morning or an afternoon work better to get you on the schedule?"
+        "prompt": "Say this ONCE, then wait for the caller's answer. Do NOT repeat it: 'Perfect. To get this started, we'll send one of our Certified Septic Experts out to thoroughly assess your system, check the levels, and give you an exact, upfront price for the pumping. Normally it's just a one hundred forty-nine dollar service-call fee to get an expert to your door with a full written assessment — but as long as you move forward with the pumping while we're there, we'll completely waive that fee. Does a morning or an afternoon work better to get you on the schedule?' After they answer, continue."
       }
     },
     {
@@ -162,7 +154,7 @@
       "type": "Default",
       "data": {
         "name": "Payment handoff",
-        "text": "Wonderful. You won't need to share any payment details with me today — one of our team members will call you back within the hour to confirm your exact appointment time and take care of payment."
+        "prompt": "Say this ONCE, then continue to finalize the booking. Do NOT repeat it and do NOT ask for any payment details: 'Wonderful. You won't need to share any payment details with me today — one of our team members will call you back within the hour to confirm your exact appointment time and take care of payment.'"
       }
     },
     {
@@ -222,10 +214,9 @@
     { "id": "e_emerg_transfer", "source": "emergency", "target": "emergency_transfer", "label": "Callback number captured — connect the caller to the on-call team" },
     { "id": "e_transfer_fallback", "source": "emergency_transfer", "target": "emergency_fallback", "label": "The transfer failed, was not answered, or no transfer number is configured" },
     { "id": "e_fallback_end", "source": "emergency_fallback", "target": "endcall", "label": "After delivering the fallback message" },
-    { "id": "e_triage_septic", "source": "greeting", "target": "septic_addon", "label": "needs septic service" },
+    { "id": "e_triage_septic", "source": "greeting", "target": "vet_location", "label": "needs septic service" },
     { "id": "e_triage_other", "source": "greeting", "target": "other_service_info", "label": "needs any non-septic service" },
 
-    { "id": "e_septic_vet1", "source": "septic_addon", "target": "vet_location", "label": "after pitch" },
     { "id": "e_vet1_vet2", "source": "vet_location", "target": "vet_access", "label": "location handled" },
     { "id": "e_vet2_vet3", "source": "vet_access", "target": "vet_size", "label": "access handled" },
     { "id": "e_vet3_close", "source": "vet_size", "target": "septic_close", "label": "size handled" },
