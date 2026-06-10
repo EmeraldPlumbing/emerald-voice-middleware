@@ -1,5 +1,6 @@
 {
   "name": "Emerald Plumbing \u2014 Inbound Intake",
+  "voice": "josh",
   "description": "Scripted inbound agent for Emerald Plumbing. Encodes the phone-answering script, septic add-on pitch, vetting questions, and fee-waiver close, then books into ServiceTitan via webhook.",
   "globalPrompt": "You are a warm, professional phone agent for Emerald Plumbing, DC's #1 plumber for sewer, septic, grease traps, and drain solutions (licensed in MD, DC, VA, DE; main line 240-392-3535). Stay friendly and concise \u2014 this is a phone call, so keep turns short and natural. Follow the scripted nodes closely; do not invent services or guarantee pricing. Pricing is for estimation only and may change after on-site inspection, so avoid quoting prices unless the caller directly asks. If the caller is angry, has an active emergency (flooding, sewage backup, no water), or asks for something outside these scripts, reassure them and offer to connect them to a live team member. PAYMENT RULE (absolute): never ask for, accept, read back, repeat, or record any payment information \u2014 card type, card number, expiration date, security/CVV code, or billing details. Do not collect payment over the phone at all. If the caller offers payment details, gently decline: 'No need to share any of that with me \u2014 a team member will reach out shortly to take care of payment securely and confirm your service.'",
   "nodes": [
@@ -8,24 +9,12 @@
       "type": "Default",
       "position": {
         "x": 360,
-        "y": 0
-      },
-      "data": {
-        "name": "Greeting",
-        "isStart": true,
-        "text": "Thank you for calling Emerald Plumbing, D C's number one plumber for sewer, septic, grease traps and drain solutions. This is Emma. Are you calling about our pumping specials or maintenance services today?"
-      }
-    },
-    {
-      "id": "triage",
-      "type": "Default",
-      "position": {
-        "x": 360,
         "y": 170
       },
       "data": {
-        "name": "Triage / Identify need",
-        "prompt": "Figure out what the caller needs. Classify into one of: SEPTIC (septic tank pumping, inspection, locate, dig), GREASE_TRAP, DRAIN_SEWER (drain clog, snaking, jetting, camera, main line, sewer/water line, exterior pipe), WATER_HEATER, SUMP_OR_STORM (sump pump, sewage ejector, storm drainage), PERC_TEST, EMERGENCY (active flooding, sewage backup, no water), or OTHER. Ask one brief clarifying question only if you genuinely can't tell. Be conversational."
+        "name": "Greeting + triage",
+        "isStart": true,
+        "prompt": "STEP 1 \u2014 Say this greeting ONCE, word for word, then stop and wait for the caller to answer. Do NOT repeat it: \"Thank you for calling Emerald Plumbing, D C's number one plumber for sewer, septic, grease traps and drain solutions. This is Josh. Are you calling about our pumping specials or maintenance services today?\" STEP 2 \u2014 After the caller replies, work out what they need and silently classify it as one of: SEPTIC (tank pumping, inspection, locate, dig), GREASE_TRAP, DRAIN_SEWER (drain clog, snaking, jetting, camera, main line, sewer/water line, exterior pipe), WATER_HEATER, SUMP_OR_STORM (sump pump, sewage ejector, storm drainage), PERC_TEST, EMERGENCY (overflowing/backing-up toilet, flooding, sewage backup, burst pipe, or no water), or OTHER. Ask at most one short clarifying question only if you truly cannot tell. Then move forward to the matching next step."
       }
     },
     {
@@ -36,8 +25,40 @@
         "y": 340
       },
       "data": {
-        "name": "Emergency handoff",
-        "text": "I'm so sorry you're dealing with that \u2014 let's get you help fast. I'm going to connect you with our on-call team right now. Please stay on the line."
+        "name": "Emergency reassure + callback",
+        "prompt": "The caller has an urgent problem (e.g. a backing-up or overflowing toilet, flooding, sewage backup, or no water). Stay calm and reassuring: 'I'm so sorry you're dealing with that \u2014 let's get you help right away.' Then, BEFORE transferring, get their best callback number in case the call drops: 'In case we get disconnected, what's the best number to reach you at?' Capture callback_number. Then say: 'Thank you \u2014 let me connect you straight to our team now. Please hold just one moment.' Never end the call here; always continue to the transfer.",
+        "extractVars": [
+          [
+            "callback_number",
+            "string",
+            "best callback number in case the call is disconnected"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "emergency_transfer",
+      "type": "Transfer Call",
+      "position": {
+        "x": 0,
+        "y": 510
+      },
+      "data": {
+        "name": "Transfer to on-call team",
+        "transferNumber": "+12406737676",
+        "text": "Connecting you now \u2014 please hold."
+      }
+    },
+    {
+      "id": "emergency_fallback",
+      "type": "Default",
+      "position": {
+        "x": 0,
+        "y": 680
+      },
+      "data": {
+        "name": "Emergency fallback (no hang-up)",
+        "text": "It looks like I'm having trouble connecting you right now, but I've flagged this as urgent and our team will call you right back at the number you gave me. If things get worse in the meantime, please call us directly at 2 4 0, 3 9 2, 3 5 3 5. Hang tight \u2014 help is on the way."
       }
     },
     {
@@ -141,8 +162,8 @@
         "y": 1190
       },
       "data": {
-        "name": "Collect contact + address",
-        "prompt": "Collect these one or two at a time, confirming as you go: (1) first name and last name, (2) best callback phone number, (3) email address, (4) how they heard about us (e.g. Google, referral, repeat customer, truck/sign, social), (5) the service street address \u2014 street, unit/apt if any, city, state, ZIP. Read the address and the spelling of their name and email back to confirm. Do NOT ask for or accept any payment-card information here.",
+        "name": "Collect contact info",
+        "prompt": "Collect these one at a time, confirming each as you go. Do NOT move on until you have all four: (1) first name and last name, (2) best callback phone number, (3) email address, (4) how they heard about us (e.g. Google, referral, repeat customer, truck/sign, social). Read the spelling of their name and email back to confirm. Do NOT ask for any payment information here. Once you clearly have the name, phone, email, and referral source, tell them: 'Great \u2014 and what's the address where you need the service?'",
         "extractVars": [
           [
             "first_name",
@@ -168,11 +189,25 @@
             "referral_source",
             "string",
             "how the caller heard about us"
-          ],
+          ]
+        ]
+      }
+    },
+    {
+      "id": "collect_address",
+      "type": "Default",
+      "position": {
+        "x": 360,
+        "y": 1360
+      },
+      "data": {
+        "name": "Collect service address",
+        "prompt": "Your ONLY job in this step is to get the complete service address. Ask: 'What's the full address where you need the service?' You must collect ALL of: street number and street name, apartment/unit if any, city, state, and ZIP code. If any part is missing, ask a brief follow-up for the missing piece \u2014 for example 'And what's the ZIP there?' Then read the entire address back and confirm it's correct before continuing. Do NOT move on until you have the street, city, state, and ZIP.",
+        "extractVars": [
           [
             "street",
             "string",
-            "service street address"
+            "service street address (number and street name)"
           ],
           [
             "unit",
@@ -202,7 +237,7 @@
       "type": "Default",
       "position": {
         "x": 360,
-        "y": 1360
+        "y": 1530
       },
       "data": {
         "name": "Collect preferred window",
@@ -231,11 +266,11 @@
       "type": "Default",
       "position": {
         "x": 360,
-        "y": 1530
+        "y": 1700
       },
       "data": {
         "name": "Payment handoff",
-        "text": "Wonderful. You won't need to share any payment details with me today \u2014 one of our team members will be in touch shortly to collect your payment information and confirm your service."
+        "text": "Wonderful. You won't need to share any payment details with me today \u2014 one of our team members will call you back within the hour to confirm your exact appointment time and take care of payment."
       }
     },
     {
@@ -243,7 +278,7 @@
       "type": "Webhook",
       "position": {
         "x": 360,
-        "y": 1700
+        "y": 1870
       },
       "data": {
         "name": "Create ServiceTitan booking",
@@ -280,11 +315,11 @@
       "type": "Default",
       "position": {
         "x": 360,
-        "y": 1870
+        "y": 2040
       },
       "data": {
         "name": "Confirm & wrap",
-        "prompt": "Read back booking_result.message if present, otherwise confirm warmly that their request is in and our office will follow up to lock in the exact time. Remind them: 'A team member will be in touch shortly to collect your payment information and confirm your service.' Ask if there's anything else."
+        "prompt": "Read back booking_result.message if present. Otherwise warmly confirm their request is logged. Then state the timing clearly: 'One of our team members will call you back within the hour to confirm your exact appointment time and take care of payment.' If the caller's preferred day/window was captured, acknowledge it (e.g. 'I've noted you'd prefer the morning'). If it's clearly after business hours or the weekend, instead say the callback will come first thing the next business day. Then ask if there's anything else."
       }
     },
     {
@@ -292,7 +327,7 @@
       "type": "End Call",
       "position": {
         "x": 360,
-        "y": 2040
+        "y": 2210
       },
       "data": {
         "name": "End",
@@ -302,30 +337,52 @@
   ],
   "edges": [
     {
-      "id": "e_greet_triage",
+      "id": "e_triage_emerg",
       "source": "greeting",
-      "target": "triage",
+      "target": "emergency",
       "type": "custom",
-      "label": "The caller has said anything in response to the greeting",
+      "label": "Urgent problem: overflowing/backing-up toilet, flooding, sewage backup, burst pipe, or no water",
       "data": {
-        "label": "The caller has said anything in response to the greeting",
-        "description": "The caller has said anything in response to the greeting"
+        "label": "Urgent problem: overflowing/backing-up toilet, flooding, sewage backup, burst pipe, or no water",
+        "description": "Urgent problem: overflowing/backing-up toilet, flooding, sewage backup, burst pipe, or no water"
       }
     },
     {
-      "id": "e_triage_emerg",
-      "source": "triage",
-      "target": "emergency",
+      "id": "e_emerg_transfer",
+      "source": "emergency",
+      "target": "emergency_transfer",
       "type": "custom",
-      "label": "active emergency: flooding, sewage backup, or no water",
+      "label": "Callback number captured \u2014 connect the caller to the on-call team",
       "data": {
-        "label": "active emergency: flooding, sewage backup, or no water",
-        "description": "active emergency: flooding, sewage backup, or no water"
+        "label": "Callback number captured \u2014 connect the caller to the on-call team",
+        "description": "Callback number captured \u2014 connect the caller to the on-call team"
+      }
+    },
+    {
+      "id": "e_transfer_fallback",
+      "source": "emergency_transfer",
+      "target": "emergency_fallback",
+      "type": "custom",
+      "label": "The transfer failed, was not answered, or no transfer number is configured",
+      "data": {
+        "label": "The transfer failed, was not answered, or no transfer number is configured",
+        "description": "The transfer failed, was not answered, or no transfer number is configured"
+      }
+    },
+    {
+      "id": "e_fallback_end",
+      "source": "emergency_fallback",
+      "target": "endcall",
+      "type": "custom",
+      "label": "After delivering the fallback message",
+      "data": {
+        "label": "After delivering the fallback message",
+        "description": "After delivering the fallback message"
       }
     },
     {
       "id": "e_triage_septic",
-      "source": "triage",
+      "source": "greeting",
       "target": "septic_addon",
       "type": "custom",
       "label": "needs septic service",
@@ -336,7 +393,7 @@
     },
     {
       "id": "e_triage_other",
-      "source": "triage",
+      "source": "greeting",
       "target": "other_service_info",
       "type": "custom",
       "label": "needs any non-septic service",
@@ -412,14 +469,25 @@
       }
     },
     {
-      "id": "e_contact_sched",
+      "id": "e_contact_addr",
       "source": "collect_contact",
+      "target": "collect_address",
+      "type": "custom",
+      "label": "Name, phone, email, and referral source have all been collected",
+      "data": {
+        "label": "Name, phone, email, and referral source have all been collected",
+        "description": "Name, phone, email, and referral source have all been collected"
+      }
+    },
+    {
+      "id": "e_addr_sched",
+      "source": "collect_address",
       "target": "collect_schedule",
       "type": "custom",
-      "label": "contact + address captured",
+      "label": "The full service address (street, city, state, and ZIP) has been collected and confirmed",
       "data": {
-        "label": "contact + address captured",
-        "description": "contact + address captured"
+        "label": "The full service address (street, city, state, and ZIP) has been collected and confirmed",
+        "description": "The full service address (street, city, state, and ZIP) has been collected and confirmed"
       }
     },
     {
