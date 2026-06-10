@@ -2,7 +2,7 @@
   "name": "Emerald Plumbing \u2014 Inbound Intake",
   "voice": "josh",
   "description": "Scripted inbound agent for Emerald Plumbing. Encodes the phone-answering script, septic add-on pitch, vetting questions, and fee-waiver close, then books into ServiceTitan via webhook.",
-  "globalPrompt": "You are a warm, professional phone agent for Emerald Plumbing, DC's #1 plumber for sewer, septic, grease traps, and drain solutions (licensed in MD, DC, VA, DE; main line 240-392-3535). Stay friendly and concise \u2014 this is a phone call, so keep turns short and natural. Follow the scripted nodes closely; do not invent services or guarantee pricing. Pricing is for estimation only and may change after on-site inspection, so avoid quoting prices unless the caller directly asks. If the caller is angry, has an active emergency (flooding, sewage backup, no water), or asks for something outside these scripts, reassure them and offer to connect them to a live team member. PAYMENT RULE (absolute): never ask for, accept, read back, repeat, or record any payment information \u2014 card type, card number, expiration date, security/CVV code, or billing details. Do not collect payment over the phone at all. If the caller offers payment details, gently decline: 'No need to share any of that with me \u2014 a team member will reach out shortly to take care of payment securely and confirm your service.'",
+  "globalPrompt": "You are Josh, a warm, professional phone agent for Emerald Plumbing, DC's #1 plumber for sewer, septic, grease traps, and drain solutions (licensed in MD, DC, VA, DE; main line 240-392-3535). Stay friendly, conversational, and genuinely helpful: answer the caller's questions directly when they ask, then guide the conversation back toward getting them scheduled. BE INTERACTIVE: if the caller asks anything at any point (price, what is included, timing, how it works), answer it before moving on; never ignore or skip a question. PRICING is for estimation only and is finalized after on-site inspection, so give these as starting estimates and say the exact price is confirmed on site. Price list: Service call/assessment fee $149 (waived if they proceed with the work during the visit). Septic pumping up to 1,000 gal $590; 1,000 to 2,000 gal $790; over 2,000 gal $1,390. Locate/dig septic lid $450. Septic camera and locate $750. Grease trap up to 100-150 gal $290 plus $149 trip charge; 500-1,499 gal $590; 1,499-3,000 gal $1,390. Sump pump pumping from $250; sump pump install $745 plus material. Storm drainage from $2,000. Drain or single-line snaking $650. Main line clearing $950. Camera inspection $750. Sewer locate $750. Exterior pipe repair up to 50 ft $250 per ft, 51 ft and up $150-$175 per ft; all pipe repairs from $245. Water heater inspection $149; water heater labor (2-hour min) $490. Perc test Virginia $9,500, Maryland $8,500; core sample $3,000. Sewage ejector, water/sewer line, and water-heater materials are priced upon inspection. AMEX adds a 6% processing fee. EMERGENCIES (CRITICAL): if at ANY point in the call, including the very end, the caller mentions an emergency (overflowing or backing-up toilet, flooding, sewage backup, burst pipe, or no water), STOP the current step, reassure them, get a callback number, and connect them to the on-call team. NEVER end or hang up the call when the caller has just raised a new problem. PAYMENT RULE (absolute): never ask for, accept, read back, repeat, or record any payment information (card type, card number, expiration date, security/CVV code, or billing details). Do not collect payment over the phone at all. If the caller offers payment details, gently decline: 'No need to share any of that with me, a team member will reach out shortly to take care of payment securely and confirm your service.'",
   "nodes": [
     {
       "id": "greeting",
@@ -26,6 +26,9 @@
       },
       "data": {
         "name": "Emergency reassure + callback",
+        "isGlobal": true,
+        "globalLabel": "Caller reports an emergency at ANY point in the call: overflowing or backing-up toilet, flooding, sewage backup, burst pipe, or no water",
+        "globalDescription": "Jump here from any node the moment the caller mentions an emergency, even at the end of the call. Never hang up on a new problem.",
         "prompt": "The caller has an urgent problem (e.g. a backing-up or overflowing toilet, flooding, sewage backup, or no water). Stay calm and reassuring: 'I'm so sorry you're dealing with that \u2014 let's get you help right away.' Then, BEFORE transferring, get their best callback number in case the call drops: 'In case we get disconnected, what's the best number to reach you at?' Capture callback_number. Then say: 'Thank you \u2014 let me connect you straight to our team now. Please hold just one moment.' Never end the call here; always continue to the transfer.",
         "extractVars": [
           [
@@ -139,7 +142,7 @@
       },
       "data": {
         "name": "Fee-waiver close (septic)",
-        "text": "Perfect. To get this started, we'll send one of our Certified Septic Experts out to thoroughly assess your system, check the levels, and give you an exact, upfront price for the pumping. Normally it's just a forty-nine dollar service-call fee to get an expert to your door with a full written assessment \u2014 but as long as you move forward with the pumping while we're there, we'll completely waive that fee. Does a morning or an afternoon work better to get you on the schedule?"
+        "text": "Perfect. To get this started, we'll send one of our Certified Septic Experts out to thoroughly assess your system, check the levels, and give you an exact, upfront price for the pumping. Normally it's just a one hundred forty-nine dollar service-call fee to get an expert to your door with a full written assessment \u2014 but as long as you move forward with the pumping while we're there, we'll completely waive that fee. Does a morning or an afternoon work better to get you on the schedule?"
       }
     },
     {
@@ -155,11 +158,30 @@
       }
     },
     {
-      "id": "collect_contact",
+      "id": "additional_issues",
       "type": "Default",
       "position": {
         "x": 360,
         "y": 1190
+      },
+      "data": {
+        "name": "Offer to check other issues ($149 covers it)",
+        "prompt": "Offer the value add before scheduling: 'And while our technician is already out there, that one hundred forty-nine dollar service call covers a full assessment \u2014 so we're happy to take a look at any OTHER plumbing issues you might be noticing, at no extra visit charge. Is anything else acting up \u2014 slow drains, a running or leaky toilet, low water pressure, a dripping faucet, water heater, anything like that?' If they mention other issues, acknowledge them warmly and note them. Capture any additional concerns into additional_issues (or 'none'). Then continue to get their details.",
+        "extractVars": [
+          [
+            "additional_issues",
+            "string",
+            "any other plumbing issues the caller mentions, or 'none'"
+          ]
+        ]
+      }
+    },
+    {
+      "id": "collect_contact",
+      "type": "Default",
+      "position": {
+        "x": 360,
+        "y": 1360
       },
       "data": {
         "name": "Collect contact info",
@@ -198,7 +220,7 @@
       "type": "Default",
       "position": {
         "x": 360,
-        "y": 1360
+        "y": 1530
       },
       "data": {
         "name": "Collect service address",
@@ -237,7 +259,7 @@
       "type": "Default",
       "position": {
         "x": 360,
-        "y": 1530
+        "y": 1700
       },
       "data": {
         "name": "Collect preferred window",
@@ -266,7 +288,7 @@
       "type": "Default",
       "position": {
         "x": 360,
-        "y": 1700
+        "y": 1870
       },
       "data": {
         "name": "Payment handoff",
@@ -278,7 +300,7 @@
       "type": "Webhook",
       "position": {
         "x": 360,
-        "y": 1870
+        "y": 2040
       },
       "data": {
         "name": "Create ServiceTitan booking",
@@ -286,7 +308,7 @@
         "method": "POST",
         "headers": {
           "Content-Type": "application/json",
-          "x-emerald-secret": "{{WEBHOOK_SECRET}}"
+          "x-emerald-secret": "mDGJkJIxY1LTtJJInejiK9FNUjBGwnlu-7QoyRPxUC8"
         },
         "body": {
           "first_name": "{{first_name}}",
@@ -305,6 +327,7 @@
           "needs_locate": "{{needs_locate}}",
           "needs_dig": "{{needs_dig}}",
           "tank_size": "{{tank_size}}",
+          "additional_issues": "{{additional_issues}}",
           "call_id": "{{call_id}}"
         },
         "responseVar": "booking_result"
@@ -315,11 +338,11 @@
       "type": "Default",
       "position": {
         "x": 360,
-        "y": 2040
+        "y": 2210
       },
       "data": {
         "name": "Confirm & wrap",
-        "prompt": "Read back booking_result.message if present. Otherwise warmly confirm their request is logged. Then state the timing clearly: 'One of our team members will call you back within the hour to confirm your exact appointment time and take care of payment.' If the caller's preferred day/window was captured, acknowledge it (e.g. 'I've noted you'd prefer the morning'). If it's clearly after business hours or the weekend, instead say the callback will come first thing the next business day. Then ask if there's anything else."
+        "prompt": "Read back booking_result.message if present. Otherwise warmly confirm their request is logged. Then state the timing clearly: 'One of our team members will call you back within the hour to confirm your exact appointment time and take care of payment.' If the caller's preferred day/window was captured, acknowledge it (e.g. 'I've noted you'd prefer the morning'). If it's clearly after business hours or the weekend, instead say the callback will come first thing the next business day. Then ask if there's anything else. IMPORTANT: only end the call after the caller clearly confirms there is nothing else. If they raise a NEW problem, do NOT end the call \u2014 if it's an emergency (overflow, flooding, sewage backup, burst pipe, no water) handle it as an emergency; otherwise help them with the new request."
       }
     },
     {
@@ -327,7 +350,7 @@
       "type": "End Call",
       "position": {
         "x": 360,
-        "y": 2210
+        "y": 2380
       },
       "data": {
         "name": "End",
@@ -449,7 +472,7 @@
     {
       "id": "e_close_contact",
       "source": "septic_close",
-      "target": "collect_contact",
+      "target": "additional_issues",
       "type": "custom",
       "label": "caller wants to schedule",
       "data": {
@@ -460,12 +483,23 @@
     {
       "id": "e_other_contact",
       "source": "other_service_info",
-      "target": "collect_contact",
+      "target": "additional_issues",
       "type": "custom",
       "label": "ready to schedule",
       "data": {
         "label": "ready to schedule",
         "description": "ready to schedule"
+      }
+    },
+    {
+      "id": "e_addl_contact",
+      "source": "additional_issues",
+      "target": "collect_contact",
+      "type": "custom",
+      "label": "Other issues asked about (noted or none)",
+      "data": {
+        "label": "Other issues asked about (noted or none)",
+        "description": "Other issues asked about (noted or none)"
       }
     },
     {
@@ -528,10 +562,10 @@
       "source": "confirm",
       "target": "endcall",
       "type": "custom",
-      "label": "nothing else needed",
+      "label": "The caller has clearly confirmed there is nothing else and no new problem was raised",
       "data": {
-        "label": "nothing else needed",
-        "description": "nothing else needed"
+        "label": "The caller has clearly confirmed there is nothing else and no new problem was raised",
+        "description": "The caller has clearly confirmed there is nothing else and no new problem was raised"
       }
     }
   ]

@@ -9,6 +9,7 @@
 import "dotenv/config";
 import express from "express";
 import { createBooking } from "./servicetitan.js";
+import { sendBookingEmail } from "./email.js";
 
 const app = express();
 app.use(express.json({ limit: "256kb" }));
@@ -59,6 +60,7 @@ app.post("/bland/book", async (req, res) => {
     referralSource: body.referral_source,
     serviceType: body.service_type,
     summary: body.call_summary || body.service_type,
+    additionalIssues: body.additional_issues,
     preferredWindow: body.preferred_window,
     callId: body.call_id,
     address: {
@@ -83,18 +85,29 @@ app.post("/bland/book", async (req, res) => {
   try {
     const { bookingId } = await createBooking(call);
     console.log(`Booking created: #${bookingId} for ${call.name}`);
+
+    // Best-effort email to the workorders inbox. Never let an email failure
+    // break the booking flow — log it and move on.
+    sendBookingEmail(call, bookingId)
+      .then(() => console.log(`Notification emailed for booking #${bookingId}`))
+      .catch((e) => console.error("Notification email failed:", e.message));
+
     return res.json({
       ok: true,
       booking_id: bookingId,
       // Spoken confirmation the agent can read back.
       message: `You're all set — I've got your request in for ${
         call.serviceType
-      } and our office will confirm your ${
-        call.preferredWindow || "appointment"
-      }. A team member will be in touch shortly to collect your payment information and confirm your service. Anything else I can help with?`,
+      }, and you'd prefer ${
+        call.preferredWindow || "the soonest available time"
+      }. One of our team members will call you back within the hour to confirm your exact appointment time and take care of payment. Anything else I can help with?`,
     });
   } catch (err) {
     console.error("Booking error:", err.message);
+    // ServiceTitan failed — still email the lead so it isn't lost.
+    sendBookingEmail(call, null)
+      .then(() => console.log("Lead emailed despite ServiceTitan failure"))
+      .catch((e) => console.error("Fallback email failed:", e.message));
     return res.status(502).json({
       ok: false,
       message:

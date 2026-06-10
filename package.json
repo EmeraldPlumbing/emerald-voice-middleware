@@ -1,19 +1,17 @@
 {
-  "name": "emerald-voice-middleware",
+  "name": "emerald-voice-agent",
   "version": "1.0.0",
-  "description": "Webhook bridge between Bland.ai voice agent and ServiceTitan CRM for Emerald Plumbing Co.",
-  "main": "src/server.js",
+  "description": "Bland.ai + RingCentral inbound call agent that books jobs into ServiceTitan for Emerald Plumbing",
   "type": "module",
+  "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "node src/server.js",
-    "deploy-pathway": "node bland-pathway-builder.js"
+    "dev": "node --watch src/server.js",
+    "deploy-pathway": "node src/bland-pathway-builder.js"
   },
   "dependencies": {
-    "dotenv": "^17.4.2",
-    "express": "^4.18.2"
-  },
-  "engines": {
-    "node": ">=18.0.0"
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "nodemailer": "^6.9.14"
   }
 }
